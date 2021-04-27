@@ -17,6 +17,7 @@ public:
 
 private slots:
     void encode();
+    void decode();
     void generateKey();
 
 

@@ -44,7 +44,7 @@
          <bool>true</bool>
         </property>
         <property name="readOnly">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -142,8 +142,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>button_decrypt</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>decode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>421</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Button_generate_key</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>generateKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>494</x>
+     <y>38</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>421</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>encode()</slot>
+  <slot>decode()</slot>
+  <slot>generateKey()</slot>
  </slots>
 </ui>
