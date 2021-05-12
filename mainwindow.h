@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <iostream>
+#include "aes256.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,6 +18,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void copy();
     void encode();
     void decode();
     void generateKey();
@@ -23,5 +26,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    ByteArray separateQString(QString text);
+    ByteArray separateForKey(QString text);
 };
 #endif // MAINWINDOW_H

@@ -36,6 +36,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="button_copy">
+          <property name="text">
+           <string>▲ Copy encrypted ▲</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>
@@ -174,10 +181,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>button_copy</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>copy()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>421</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>encode()</slot>
   <slot>decode()</slot>
   <slot>generateKey()</slot>
+  <slot>copy()</slot>
  </slots>
 </ui>

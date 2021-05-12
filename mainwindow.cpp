@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <iostream>
-#include "aes256.hpp"
-#include <QChar>
-
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -19,59 +15,62 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// Функция для разделения 2-х байтового QChar по одному байту в ByteArray(vector<unsigned char>)
+// Для каждого символа из QString будет две ячейки в ByteArray
+ByteArray MainWindow::separateQString(QString text)
+{
+    ByteArray result;
+    for (unsigned long i = 0; i < (2*text.length()); ++i)
+        if(i%2==0)
+            //Берем значение из QString, сдвигаем его вправо на 1 байт. Остается старший байт.
+            result.push_back(text[i/2].unicode()>>8);
+        else
+            // Если последний бит содержит 0xf0, игонируем его. Это лишний бит при нечетном количестве
+            if(!((i==2*text.length()-1)&&((text[i/2].unicode()&0xff)==0xf0)))
+                //С помощью побитового И оставляем только младший байт.
+                result.push_back(text[i/2].unicode()&0xff);
 
+    return result;
+}
+
+ByteArray MainWindow::separateForKey(QString text)
+{
+    ByteArray result;
+    for (unsigned long i = 0; i < (2*text.length()); ++i)
+        if(i%2==0)
+            //Берем значение из QString, сдвигаем его вправо на 1 байт. Остается старший байт.
+            result.push_back(text[i/2].unicode()>>8);
+        else
+            //С помощью побитового И оставляем только младший байт.
+            result.push_back(text[i/2].unicode()&0xff);
+    return result;
+}
 
 void MainWindow::encode()
 {
-    QString enteredText = ui->enterText->toPlainText();
-    // Индексы съезжают переписать
-    ByteArray text;
-    for (unsigned long i = 0; i < (2*enteredText.length()); ++i)
-        if(i%2==0)
-            text.push_back(enteredText[i/2].unicode()>>8);
-        else
-            text.push_back(enteredText[i/2].unicode()&0xff);
-
-
+    ByteArray text = separateQString(ui->enterText->toPlainText());
 
     if(ui->keyText->toPlainText().isEmpty())
         generateKey();
-    QString str_key = ui->keyText->toPlainText();
-    ByteArray key;
-    for (unsigned long i = 0; i < (2*str_key.length()); ++i)
-        if(i%2==0)
-            key.push_back(str_key[i/2].unicode()>>8);
-        else
-            key.push_back(str_key[i/2].unicode()&0xff);
+    ByteArray key = separateForKey(ui->keyText->toPlainText());
 
-    ByteArray enc, dec;
-    ByteArray::size_type enc_len = Aes256::encrypt(key, text, enc);
+    ByteArray enc;
+    Aes256::encrypt(key, text, enc);
+
     QString test;
     for (unsigned long i = 0; i < enc.size(); i+=2)
         test.append(QChar(enc[i]<<8|enc[i+1]));
+
     ui->readyText->setPlainText(test);
 }
 
 void MainWindow::decode()
 {
-    QString coded = ui->readyText->toPlainText();
-
-    ByteArray text;
-    for (unsigned long i = 0; i < (2*coded.length()); ++i)
-        if(i%2==0)
-            text.push_back(coded[i/2].unicode()>>8);
-        else
-            text.push_back(coded[i/2].unicode()&0xff);
+    ByteArray text = separateQString(ui->enterText->toPlainText());
 
     if(ui->keyText->toPlainText().isEmpty())
         generateKey();
-    QString str_key = ui->keyText->toPlainText();
-    ByteArray key;
-    for (unsigned long i = 0; i < (2*str_key.length()); ++i)
-        if(i%2==0)
-            key.push_back(str_key[i/2].unicode()>>8);
-        else
-            key.push_back(str_key[i/2].unicode()&0xff);
+    ByteArray key = separateForKey(ui->keyText->toPlainText());
 
     ByteArray dec;
     Aes256::decrypt(key, text, dec);
@@ -80,13 +79,19 @@ void MainWindow::decode()
     for (unsigned long i = 0; i < dec.size(); i+=2)
         test.append(QChar(dec[i]<<8|dec[i+1]));
 
-    ui->enterText->setPlainText(test);
+    ui->readyText->setPlainText(test);
 }
 
 void MainWindow::generateKey()
 {
     QString newKey;
-    for (unsigned int i = 0; i < 32; i++)
+    for (unsigned int i = 0; i < 16; i++)
         newKey.append(QChar(rand()));
     ui->keyText->setPlainText(newKey);
+}
+
+void MainWindow::copy()
+{
+    ui->enterText->setPlainText(ui->readyText->toPlainText());
+    ui->readyText->clear();
 }
