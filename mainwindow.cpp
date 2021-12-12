@@ -20,7 +20,7 @@ MainWindow::~MainWindow()
 ByteArray MainWindow::separateQString(QString text)
 {
     ByteArray result;
-    for (unsigned long i = 0; i < (2*text.length()); ++i)
+    for (int i = 0; i < (2*text.length()); ++i)
         if(i%2==0)
             //Берем значение из QString, сдвигаем его вправо на 1 байт. Остается старший байт.
             result.push_back(text[i/2].unicode()>>8);
@@ -36,7 +36,7 @@ ByteArray MainWindow::separateQString(QString text)
 ByteArray MainWindow::separateForKey(QString text)
 {
     ByteArray result;
-    for (unsigned long i = 0; i < (2*text.length()); ++i)
+    for (int i = 0; i < (2*text.length()); ++i)
         if(i%2==0)
             //Берем значение из QString, сдвигаем его вправо на 1 байт. Остается старший байт.
             result.push_back(text[i/2].unicode()>>8);
